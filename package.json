@@ -1,0 +1,14 @@
+{
+    "name": "cf-speed-test",
+    "version": "1.0.0",
+    "description": "CLI Speed Test Tool (Download, Upload, Ping, Jitter)",
+    "type": "module",
+    "bin": {
+        "netspeed": "./index.js"
+    },
+    "dependencies": {
+        "chalk": "^5.3.0",
+        "gradient-string": "^3.0.0",
+        "ora": "^7.0.1"
+    }
+}
