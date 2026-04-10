@@ -13,7 +13,9 @@
         "upload",
         "ping",
         "jitter",
-        "netspeed"
+        "netspeed",
+        "cf-speed-test",
+        "cloudflare"
     ],
     "type": "module",
     "bin": {
