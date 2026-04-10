@@ -8,6 +8,14 @@ import {
     animateLoop,
 } from "./utils.js";
 
+const controller = new AbortController();
+
+process.on("SIGINT", () => {
+    console.log("\n⚠️ Test aborted");
+    controller.abort();
+    process.exit(1);
+});
+
 // args
 const args = process.argv.slice(2);
 
@@ -40,16 +48,20 @@ async function run() {
         console.log(chalk.gray(`\nRound ${i + 1}\n`));
 
         // 🔥 download animation
-        const stopDownloadAnim = animateLoop("Testing download...");
-        const dl = await downloadTest(DOWNLOAD_URL, CONNECTIONS);
-        stopDownloadAnim();
+       console.log("⬇ Testing download...");
+       const dl = await downloadTest(DOWNLOAD_URL, CONNECTIONS);
 
         console.log(chalk.blue(`✔ Download: ${dl.toFixed(2)} Mbps`));
 
         // 🔥 upload animation
-        const stopUploadAnim = animateLoop("Testing upload...");
-        const ul = await uploadTest(UPLOAD_URL, UPLOAD_MB, CONNECTIONS);
-        stopUploadAnim();
+       console.log("\n⬆ Testing upload...");
+       const ul = await uploadTest(
+           UPLOAD_URL,
+           UPLOAD_MB,
+           CONNECTIONS,
+           controller.signal,
+       );
+       console.log(`✔ Upload: ${ul.toFixed(2)} Mbps`);
 
         console.log(chalk.magenta(`✔ Upload:   ${ul.toFixed(2)} Mbps`));
 

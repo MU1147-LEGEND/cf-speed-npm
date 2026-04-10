@@ -1,7 +1,20 @@
 {
     "name": "cf-speed-test",
+    "author": "Muhammad Ullah",
+    "license": "MIT",
     "version": "1.0.0",
     "description": "CLI Speed Test Tool (Download, Upload, Ping, Jitter)",
+    "keywords": [
+        "speedtest",
+        "cli",
+        "internet",
+        "network",
+        "download",
+        "upload",
+        "ping",
+        "jitter",
+        "netspeed"
+    ],
     "type": "module",
     "bin": {
         "netspeed": "./index.js"
