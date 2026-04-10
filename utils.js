@@ -1,5 +1,5 @@
-import { performance } from "node:perf_hooks";
 import gradient from "gradient-string";
+import { performance } from "node:perf_hooks";
 
 // ---------------- SAFE FETCH ----------------
 async function safeFetch(url, options = {}, timeout = 8000, retries = 2) {
@@ -26,6 +26,11 @@ async function safeFetch(url, options = {}, timeout = 8000, retries = 2) {
             await new Promise((r) => setTimeout(r, 800));
         }
     }
+}
+
+// Simplified fetch for POST (no retry to avoid stream reuse issues)
+async function postFetch(url, options = {}) {
+    return fetch(url, options);
 }
 
 // ---------------- LATENCY ----------------
@@ -69,8 +74,34 @@ export async function downloadTest(url, connections, signal) {
     const totalBytes = fileSize * connections;
 
     const progressArr = new Array(connections).fill(0);
+    let frameCount = 0;
 
     const start = performance.now();
+
+    function renderDownloadProgress(percent, speed) {
+        const width = 20;
+        const safePercent = Math.max(0, Math.min(100, percent));
+        const filled = Math.round((safePercent / 100) * width);
+        const bar = "█".repeat(filled) + "░".repeat(width - filled);
+
+        // Stone gradient glowing animation - every frame
+        const clamp = (v) => Math.max(0, Math.min(1, v));
+        const shift = (frameCount % 20) / 20;
+
+        const animatedText = gradient([
+            { color: "#555555", pos: 0 },
+            { color: "#aaaaaa", pos: clamp(shift) },
+            { color: "#ffffff", pos: clamp(shift + 0.1) },
+            { color: "#aaaaaa", pos: clamp(shift + 0.2) },
+            { color: "#555555", pos: 1 },
+        ])(`⬇ Testing download...`);
+
+        process.stdout.write(
+            `\r${animatedText} [${bar}] ${speed.toFixed(2)} Mbps`,
+        );
+
+        frameCount++;
+    }
 
     const streams = await Promise.all(
         Array.from({ length: connections }, async (_, i) => {
@@ -116,7 +147,7 @@ export async function downloadTest(url, connections, signal) {
                         ? (receivedBytes / totalBytes) * 100
                         : 0;
 
-                    renderProgress(percent, speed);
+                    renderDownloadProgress(percent, speed);
                 }
             } catch (err) {
                 if (err.name !== "AbortError") {
@@ -141,6 +172,7 @@ export async function uploadTest(url, sizeMB, connections, signal) {
     const totalBytes = sizeMB * 1024 * 1024 * connections;
 
     let uploadedBytes = 0;
+    let frameCount = 0;
 
     const start = performance.now();
 
@@ -149,9 +181,23 @@ export async function uploadTest(url, sizeMB, connections, signal) {
         const filled = Math.round((percent / 100) * width);
         const bar = "█".repeat(filled) + "░".repeat(width - filled);
 
+        // Stone gradient glowing animation - every frame
+        const clamp = (v) => Math.max(0, Math.min(1, v));
+        const shift = (frameCount % 20) / 20;
+
+        const animatedText = gradient([
+            { color: "#555555", pos: 0 },
+            { color: "#aaaaaa", pos: clamp(shift) },
+            { color: "#ffffff", pos: clamp(shift + 0.1) },
+            { color: "#aaaaaa", pos: clamp(shift + 0.2) },
+            { color: "#555555", pos: 1 },
+        ])(`⬆ Testing upload...`);
+
         process.stdout.write(
-            `\r[${bar}] ${percent.toFixed(0)}%  ${speed.toFixed(2)} Mbps`,
+            `\r${animatedText} [${bar}] ${speed.toFixed(2)} Mbps`,
         );
+
+        frameCount++;
     }
 
     const uploadOne = async () => {
@@ -186,10 +232,10 @@ export async function uploadTest(url, sizeMB, connections, signal) {
             },
         });
 
-        await safeFetch(url, {
+        await postFetch(url, {
             method: "POST",
             body: stream,
-            duplex: "half", // 🔥 required for Node streaming upload
+            duplex: "half",
             signal,
         });
     };

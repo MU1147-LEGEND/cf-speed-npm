@@ -1,12 +1,7 @@
 #!/usr/bin/env node
 
 import chalk from "chalk";
-import {
-    downloadTest,
-    measureLatency,
-    uploadTest,
-    animateLoop,
-} from "./utils.js";
+import { downloadTest, measureLatency, uploadTest } from "./utils.js";
 
 const controller = new AbortController();
 
@@ -47,23 +42,22 @@ async function run() {
     for (let i = 0; i < ROUNDS; i++) {
         console.log(chalk.gray(`\nRound ${i + 1}\n`));
 
-        // 🔥 download animation
-       console.log("⬇ Testing download...");
-       const dl = await downloadTest(DOWNLOAD_URL, CONNECTIONS);
+        // 🔥 download with glowing animation
+        const dl = await downloadTest(
+            DOWNLOAD_URL,
+            CONNECTIONS,
+            controller.signal,
+        );
 
         console.log(chalk.blue(`✔ Download: ${dl.toFixed(2)} Mbps`));
 
-        // 🔥 upload animation
-       console.log("\n⬆ Testing upload...");
-       const ul = await uploadTest(
-           UPLOAD_URL,
-           UPLOAD_MB,
-           CONNECTIONS,
-           controller.signal,
-       );
-
-       stopUploadAnim();
-       console.log(`✔ Upload: ${ul.toFixed(2)} Mbps`);
+        // 🔥 upload with glowing animation
+        const ul = await uploadTest(
+            UPLOAD_URL,
+            UPLOAD_MB,
+            CONNECTIONS,
+            controller.signal,
+        );
 
         console.log(chalk.magenta(`✔ Upload:   ${ul.toFixed(2)} Mbps`));
 
