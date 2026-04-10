@@ -1,13 +1,40 @@
 import { performance } from "node:perf_hooks";
 import gradient from "gradient-string";
 
+// ---------------- SAFE FETCH ----------------
+async function safeFetch(url, options = {}, timeout = 8000, retries = 2) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+
+        try {
+            const res = await fetch(url, {
+                ...options,
+                signal: controller.signal,
+            });
+
+            clearTimeout(id);
+            return res;
+        } catch (err) {
+            clearTimeout(id);
+
+            if (attempt === retries) {
+                throw err;
+            }
+
+            // small delay before retry
+            await new Promise((r) => setTimeout(r, 800));
+        }
+    }
+}
+
 // ---------------- LATENCY ----------------
 export async function measureLatency(url, attempts = 5) {
     const times = [];
 
     for (let i = 0; i < attempts; i++) {
         const start = performance.now();
-        await fetch(url, { method: "HEAD", cache: "no-store" });
+        await safeFetch(url, { method: "HEAD", cache: "no-store" });
         const end = performance.now();
 
         times.push(end - start);
@@ -47,15 +74,19 @@ export async function downloadTest(url, connections, signal) {
 
     const streams = await Promise.all(
         Array.from({ length: connections }, async (_, i) => {
-            const res = await fetch(url, {
-                method: "HEAD",
+            // 🔥 random delay per connection
+            const randomDelay = Math.random() * 2000;
+            await new Promise((r) => setTimeout(r, randomDelay));
+
+            const res = await safeFetch(url, {
+                method: "GET", // ✅ MUST
                 cache: "no-store",
                 signal,
             });
 
             if (!res.body) return null;
 
-            return { stream: res.body, index: i }; // ✅ FIXED
+            return { stream: res.body, index: i };
         }),
     );
 
@@ -155,7 +186,7 @@ export async function uploadTest(url, sizeMB, connections, signal) {
             },
         });
 
-        await fetch(url, {
+        await safeFetch(url, {
             method: "POST",
             body: stream,
             duplex: "half", // 🔥 required for Node streaming upload

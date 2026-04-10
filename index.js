@@ -26,8 +26,8 @@ const getArg = (name, def) => {
 
 const isJSON = args.includes("--json");
 
-const CONNECTIONS = getArg("--connections", 4);
-const DOWNLOAD_MB = getArg("--download", 50);
+const CONNECTIONS = getArg("--connections", 2);
+const DOWNLOAD_MB = getArg("--download", 20);
 const UPLOAD_MB = getArg("--upload", 20);
 const ROUNDS = getArg("--rounds", 2);
 
@@ -61,6 +61,8 @@ async function run() {
            CONNECTIONS,
            controller.signal,
        );
+
+       stopUploadAnim();
        console.log(`✔ Upload: ${ul.toFixed(2)} Mbps`);
 
         console.log(chalk.magenta(`✔ Upload:   ${ul.toFixed(2)} Mbps`));
