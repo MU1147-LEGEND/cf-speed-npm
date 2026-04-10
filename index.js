@@ -49,7 +49,9 @@ async function run() {
             controller.signal,
         );
 
+        console.log("");
         console.log(chalk.blue(`✔ Download: ${dl.toFixed(2)} Mbps`));
+        console.log("");
 
         // 🔥 upload with glowing animation
         const ul = await uploadTest(
@@ -58,8 +60,9 @@ async function run() {
             CONNECTIONS,
             controller.signal,
         );
-
+        console.log("");
         console.log(chalk.magenta(`✔ Upload:   ${ul.toFixed(2)} Mbps`));
+        console.log("");
 
         dlArr.push(dl);
         ulArr.push(ul);
