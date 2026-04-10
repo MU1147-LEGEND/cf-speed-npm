@@ -1,8 +1,8 @@
 {
-    "name": "cf-speed-test-cli",
+    "name": "@mu1147-legend/cf-speed-test",
     "author": "Muhammad Ullah",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "CLI Speed Test Tool (Download, Upload, Ping, Jitter)",
     "keywords": [
         "speedtest",
