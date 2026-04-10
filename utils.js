@@ -94,7 +94,7 @@ export async function downloadTest(url, connections, signal) {
             { color: "#ffffff", pos: clamp(shift + 0.1) },
             { color: "#aaaaaa", pos: clamp(shift + 0.2) },
             { color: "#555555", pos: 1 },
-        ])(`⬇ Testing download...`);
+        ])(`⬇ Testing download... ${safePercent.toFixed(0)}%`);
 
         process.stdout.write(
             `\r${animatedText} [${bar}] ${speed.toFixed(2)} Mbps`,
@@ -191,7 +191,7 @@ export async function uploadTest(url, sizeMB, connections, signal) {
             { color: "#ffffff", pos: clamp(shift + 0.1) },
             { color: "#aaaaaa", pos: clamp(shift + 0.2) },
             { color: "#555555", pos: 1 },
-        ])(`⬆ Testing upload...`);
+        ])(`⬆ Testing upload... ${percent.toFixed(0)}%`);
 
         process.stdout.write(
             `\r${animatedText} [${bar}] ${speed.toFixed(2)} Mbps`,
