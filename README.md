@@ -18,7 +18,7 @@ Includes:
 ### Run instantly (no install)
 
 ```bash
-npx cf-speed-test
+npx @mu1147-legend/cf-speed-test
 ```
 
 ---
@@ -26,7 +26,7 @@ npx cf-speed-test
 ### Install globally
 
 ```bash
-npm install -g cf-speed-test
+npm install -g @mu1147-legend/cf-speed-test
 ```
 
 Then run:
