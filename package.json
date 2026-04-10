@@ -1,5 +1,5 @@
 {
-    "name": "cf-speed-test",
+    "name": "cf-speed-test-cli",
     "author": "Muhammad Ullah",
     "license": "MIT",
     "version": "1.0.0",
@@ -17,7 +17,7 @@
     ],
     "type": "module",
     "bin": {
-        "netspeed": "./index.js"
+        "netspeed": "index.js"
     },
     "dependencies": {
         "chalk": "^5.3.0",
