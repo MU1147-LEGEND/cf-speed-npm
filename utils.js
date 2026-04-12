@@ -1,6 +1,9 @@
 import gradient from "gradient-string";
 import { performance } from "node:perf_hooks";
 
+let fetchFn = globalThis.fetch || await import("node-fetch");
+fetchFn = fetchFn.default || fetchFn;
+
 // ---------------- SAFE FETCH ----------------
 async function safeFetch(url, options = {}, timeout = 8000, retries = 2) {
     for (let attempt = 0; attempt <= retries; attempt++) {
@@ -8,7 +11,7 @@ async function safeFetch(url, options = {}, timeout = 8000, retries = 2) {
         const id = setTimeout(() => controller.abort(), timeout);
 
         try {
-            const res = await fetch(url, {
+            const res = await fetchFn(url, {
                 ...options,
                 signal: controller.signal,
             });
@@ -30,7 +33,7 @@ async function safeFetch(url, options = {}, timeout = 8000, retries = 2) {
 
 // Simplified fetch for POST (no retry to avoid stream reuse issues)
 async function postFetch(url, options = {}) {
-    return fetch(url, options);
+    return fetchFn(url, options);
 }
 
 // ---------------- LATENCY ----------------
